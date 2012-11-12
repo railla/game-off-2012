@@ -6,7 +6,8 @@ POSITION_Y = 270;
 BAR_STEP = 5;
 BARS_WIDTH = 1000;
 UNIT = 100;
-DEBUG_SERVER = "http://127.0.0.1:5000/gitfighter";
+DEBUG_SERVER = "http://127.0.0.1:5000/";
+REFRESH_RATE = 25;
 
 // fighters states
 IDLE =          0;
@@ -43,31 +44,35 @@ $(function(){
         fighter = sprite.data("fighter");
         name = fighter.name;
 
-        move_number = fighter.moves;
+        move_number = fighter.move;
         move = scenario.log[name][move_number];
         if(typeof move == 'undefined') return;
         var nextState = move.state;
         animate_bar(name, move_number);
-        fighter.moves ++;
+        fighter.move ++;
 
-        changeAnimation(sprite, fighter.animations, nextState, fighter.currentState);
+        changeAnimation(sprite, fighter.animations, nextState, fighter.current_state);
 
         if(nextState == PUNCH || nextState == KICK){
             sprite.z(20);
-        } else if(fighter.currentState == PUNCH || fighter.currentState == KICK){
+        } else if(fighter.current_state == PUNCH || fighter.current_state == KICK){
             sprite.z(0);
         }
 
-        fighter.currentState = nextState;
+        fighter.current_state = nextState;
+        console.log(move.position);
+        fighter.new_position = move.position * UNIT;
+        fighter.position = move.position * UNIT;
     }
 
     function create_fighter(fighter){
         fighters[fighter] = {
-            currentState : IDLE,
+            current_state: IDLE,
             position: scenario.fighters[fighter].position * UNIT,
+            new_position: scenario.fighters[fighter].position * UNIT,
             adversary: (fighter == "fighter_0") ? "#fighter_1" : "#fighter_0",
             name: fighter,
-            moves: 0,
+            move: 0,
             animations: $.map([ {imageURL: get_image(fighter, "idle"),
                                 numberOfFrame: FRAME_COUNT,
                                 delta: FIGHTER_SIZE, rate: 240,
@@ -118,12 +123,12 @@ $(function(){
             .setAnimation(animationArry[newAnimation].animation)
             .width(animationArry[newAnimation].width)
             .height(animationArry[newAnimation].height)
-            .y(sprite.position().top  + animationArry[newAnimation].deltaY - animationArry[oldAnimation].deltaY)
-            .x(sprite.position().left + animationArry[newAnimation].deltaX - animationArry[oldAnimation].deltaX);
+            .y(sprite.position().top)
+            .x(sprite.position().left)
     };
 
     // the game
-    $("#playground").playground({height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH, refreshRate: 30, keyTracker: true});
+    $("#playground").playground({height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH, refreshRate: 10, keyTracker: true});
 
     //Playground Sprites
     var hp_fighter_0 = new $.gQ.Animation({imageURL: "./playground/bar.png"});
@@ -166,28 +171,24 @@ $(function(){
         $.playground().registerCallback(function(){
             var fighter_1 = $("#fighter_1");
             var fighter_1F = fighter_1.data("fighter");
-            var fighter_1Left = fighter_1.position().left;
 
             var fighter_0 = $("#fighter_0");
             var fighter_0F = fighter_0.data("fighter");
-            var fighter_0Left = fighter_0.position().left;
 
             //Move
-            if(fighter_0F.currentState == WALK_FORWARD){
-                fighter_0.x(fighter_0Left + 1);
+            if(fighter_0F.current_state == WALK_FORWARD || fighter_0F.current_state == WALK_BACKWARD){
+                fighter_0.x(fighter_0F.position);
             }
-            else if(fighter_0F.currentState == WALK_BACKWARD){
-                fighter_0.x(fighter_0Left - 1);
-            }
-            if(fighter_1F.currentState == WALK_FORWARD){
-                fighter_1.x(fighter_1Left - 1);
-            }
-            else if(fighter_1F.currentState == WALK_BACKWARD){
-                fighter_1.x(fighter_1Left + 1);
+            if(fighter_1F.current_state == WALK_FORWARD || fighter_1F.current_state == WALK_BACKWARD){
+                fighter_1.x(fighter_1F.position);
             }
 
+            if(fighter_0F.position == fighter_1F.position) {
+                console.log("Duh!", fighter_0F.position, fighter_1F.position);
+                //return false;
+            }
             return false;
-        }, 30);
+        }, 1000);
 
         $("#hp_fighter_0").css("background-repeat", "repeat");
         $("#hp_fighter_1").css("background-repeat", "repeat");

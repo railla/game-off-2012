@@ -17,12 +17,12 @@ class Arena(object):
         return (self.fighter_0, self.fighter_1)
 
     def start(self):
-        self.log = {self.fighter_0.name: [], self.fighter_1.name: []}
-        print(self.log)
+        self.log = {x.name: [] for x in self.fighters}
         while not any([x.hp <= 0 for x in (self.fighter_0, self.fighter_1)]):
             for x in (self.fighter_0, self.fighter_1):
                 state, message = x.choice()
-                self.log[x.name].append({"hp": x.hp,"state": state, "position": x.place, "message": message})
+                self.log[x.name].append({"hp": x.hp, "state": state, "position": x.position, "message": message})
+                assert self.fighter_0.position != self.fighter_1.position, "Duh! %s" % self.log
 
     def json(self):
         return {"width": self.width}
@@ -33,8 +33,8 @@ class Arena(object):
 
 
 class Fighter(object):
-    def __init__(self, arena, name = "Fighter", place = 1):
-        self.position = place
+    def __init__(self, arena, name = "Fighter", position = 1):
+        self.position = position
         self.name = name
         self.step = 1
         self.attack = 5
@@ -42,7 +42,7 @@ class Fighter(object):
         self.hp = self.hp_max
         self.range = 1 
         self.arena = arena
-        self.place = place
+        self.position = position
         self.state = 0
         self.act = {0: self.idle,
                 1: self.walk_forward,
@@ -56,11 +56,12 @@ class Fighter(object):
     def __str__(self):
         return "%s (%d hp)" % (self.name, self.hp)
     
-    def can_move(self, place):
-        if self.place < place:
-            return 0 < place < self.arena.width and not any([self.place < x.place <= place for x in self.arena.fighters if x is not self])
-        else:
-            return 0 < place < self.arena.width and not any([place <= x.place < self.place for x in self.arena.fighters if x is not self])
+    def can_move(self, position):
+        if not(1 < position < self.arena.width - 1):
+            return False
+        if self is self.arena.fighter_0:
+            return position < self.arena.fighter_1.position
+        return position > self.arena.fighter_0.position
 
     def adversary(self):
         if self is self.arena.fighter_0:
@@ -68,25 +69,25 @@ class Fighter(object):
         return self.arena.fighter_0
 
     def near(self):
-        if abs(self.arena.fighter_0.place - self.arena.fighter_1.place) <= self.range:
+        if abs(self.arena.fighter_0.position - self.arena.fighter_1.position) <= self.range:
             return self.adversary()
 
     def idle(self):
         return "%s remains idle" % self
 
     def walk_forward(self):
-        old_place = self.place
-        new_place = self.place + self.step
-        if self.can_move(new_place):
-            self.place = new_place
-            return "%s moves forward from %s to %s" % (self, old_place, new_place)
+        old_position = self.position
+        new_position = self.position + self.step
+        if self.can_move(new_position):
+            self.position = new_position
+            return "%s moves forward from %s to %s" % (self, old_position, new_position)
 
     def walk_backward(self):
-        old_place = self.place
-        new_place = self.place - self.step
-        if self.can_move(new_place):
-            self.place = new_place
-            return "%s moves backward from %s to %s" % (self, old_place, new_place)
+        old_position = self.position
+        new_position = self.position - self.step
+        if self.can_move(new_position):
+            self.position = new_position
+            return "%s moves backward from %s to %s" % (self, old_position, new_position)
 
     def punch(self):
         target = self.near()
