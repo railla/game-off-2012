@@ -6,7 +6,7 @@ POSITION_Y = 270;
 BAR_STEP = 5;
 BARS_WIDTH = 1000;
 UNIT = 100;
-DEBUG_SERVER = "http://127.0.0.1:5000/";
+DEBUG_SERVER = "http://127.0.0.1:5000";
 REFRESH_RATE = 25;
 
 // fighters states
@@ -25,13 +25,15 @@ function get_image(fighter, action){
 $(function(){
     var scenario;
     var fighters = {};
-
+    
+    /*
     $.getJSON(DEBUG_SERVER + "/start",
             function(data) {
                 scenario = data;
                 show_fight();
             }
         );
+    */
 
     function animate_bar(fighter, move_number){
         $("#hp_" + fighter).css("width", BAR_STEP * scenario.log[fighter][move_number].hp);
