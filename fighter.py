@@ -3,12 +3,6 @@
 import random
 import math
 
-true = True
-false = False
-null = None
-
-stub_fighters = {"fighters":{"f1":{"open_issues":2,"pushed_at":"2012-11-14T17:27:48Z","ssh_url":"git@github.com:some_login/some_name.git","has_downloads":true,"forks_count":60,"forks":60,"created_at":"2011-12-18T15:22:51Z","owner":{"login":"some_login","avatar_url":"https://secure.gravatar.com/avatar/9ba739c8f3288e256b13553e4d257b5e?d', u'https://example.com/example.png","gravatar_id":"blah","id":1,"url":"https://api.github.com/users/some_login"},"full_name":"some_login/some_name","network_count":60,"mirror_url":null,"homepage":"","organization":{"login":"some_login","avatar_url":"https://secure.gravatar.com/avatar/some_avatar","gravatar_id":"blah","id":1,"url":"https://api.github.com/users/some_login"},"watchers":823,"has_wiki":true,"open_issues_count":2,"updated_at":"2012-11-14T17:54:48Z","clone_url":"https://github.com/some_login/some_name.git","svn_url":"https://github.com/some_login/some_name","description":"some_name is a","master_branch":"master","git_url":"git://github.com/some_login/some_name.git","size":872,"has_issues":true,"fork":false,"language":"ActionScript","name":"some_name","watchers_count":823,"html_url":"https://github.com/some_login/some_name","private":false,"id":2,"url":"https://api.github.com/repos/some_login/some_name"},"f2":{"open_issues":1,"pushed_at":"2012-11-14T13:05:35Z","ssh_url":"git@github.com:some_other_project/other_name.git","has_downloads":true,"forks_count":2,"forks":2,"created_at":"2012-11-11T19:02:54Z","owner":{"login":"some_other_project","avatar_url":"https://secure.gravatar.com/avatar/another_avatar","gravatar_id":"blah","id":308,"url":"https://api.github.com/users/some_other_project"},"full_name":"some_other_project/other_name","network_count":2,"mirror_url":null,"homepage":null,"watchers":34,"has_wiki":true,"open_issues_count":1,"updated_at":"2012-11-14T14:52:10Z","clone_url":"https://github.com/some_other_project/other_name.git","svn_url":"https://github.com/some_other_project/other_name","description":"some description","master_branch":"master","git_url":"git://github.com/some_other_project/other_name.git","size":140,"has_issues":true,"fork":false,"language":"Python","name":"other_name","watchers_count":34,"html_url":"https://github.com/some_other_project/other_name","private":false,"id":3,"url":"https://api.github.com/repos/some_other_project/other_name"}}}
-
 
 class Arena(object):
     def __init__(self, width=10):
@@ -16,31 +10,30 @@ class Arena(object):
         self.fighter_0 = None
         self.fighter_1 = None
 
-    def set_fighters(self, fighters=stub_fighters):
-        print fighters, fighters.__class__, fighters.keys()
-        for key in fighters["fighters"]["f2"].keys():
-            print "\n", key, fighters["fighters"]["f1"][key], fighters["fighters"]["f2"][key]
-        self.fighter_0 = Fighter(self, 3, fighters["fighters"]["f1"])
-        self.fighter_1 = Fighter(self, 5, fighters["fighters"]["f2"])
+    def set_fighters(self, fighters):
+        self.fighter_0 = Fighter(self, 3, fighters["fighters"]["fighter_0"])
+        self.fighter_1 = Fighter(self, 5, fighters["fighters"]["fighter_1"])
 
     @property
     def fighters(self):
         return (self.fighter_0, self.fighter_1)
 
     def start(self):
-        self.log = {x.name: [] for x in self.fighters}
+        self.log = {"fighter_0": [], "fighter_1": []}
         while not any([x.hp <= 0 for x in (self.fighter_0, self.fighter_1)]):
-            for x in (self.fighter_0, self.fighter_1):
-                state, message = x.choice()
-                self.log[x.name].append({"hp": x.hp, "state": state, "position": x.position, "message": message})
-                assert self.fighter_0.position != self.fighter_1.position, "Duh! %s" % self.log
+            state, message = self.fighter_0.choice()
+            self.log["fighter_0"].append({"hp": self.fighter_0.hp, "state": state, "position": self.fighter_0.position, "message": message})
+            state, message = self.fighter_1.choice()
+            self.log["fighter_1"].append({"hp": self.fighter_1.hp, "state": state, "position": self.fighter_1.position, "message": message})
+            assert self.fighter_0.position != self.fighter_1.position, "Duh! %s" % self.log
 
     def json(self):
         return {"width": self.width}
 
     @property
     def json_fighters(self):
-        return {x.name: {"hp": x.hp_max, "position": x.position} for x in self.fighters}
+        return {"fighter_0": {"hp": self.fighter_0.hp_max, "position": self.fighter_1.position},
+                "fighter_1": {"hp": self.fighter_1.hp_max, "position": self.fighter_1.position}}
 
 
 class Fighter(object):
@@ -59,7 +52,6 @@ class Fighter(object):
                 }
         self.__dict__.update({key: stats[key] for key in stats 
             if not any([key.endswith(suff) for suff in ("_id", "_count", "_url")])})
-        print self.__dict__, self.forks
         self.hp_max = self.size
 
     @property

@@ -3,7 +3,7 @@ PLAYGROUND_HEIGHT = 450;
 FIGHTER_SIZE = 100;
 FRAME_COUNT = 4;
 POSITION_Y = 270;
-BAR_STEP = 5;
+BAR_STEP = 0.3;
 BARS_WIDTH = 1000;
 UNIT = 100;
 DEBUG_SERVER = "http://127.0.0.1:5000";
@@ -22,23 +22,14 @@ function get_image(fighter, action){
     return "./" + fighter + "/" + action + "_" + FIGHTER_SIZE + "x" + FIGHTER_SIZE + "x" + FRAME_COUNT + ".png";
 }
 
-$(function(){
-    var scenario;
+function start_fight(){
     var fighters = {};
     
-    /*
-    $.getJSON(DEBUG_SERVER + "/start",
-            function(data) {
-                scenario = data;
-                show_fight();
-            }
-        );
-    */
-
-    function animate_bar(fighter, move_number){
-        $("#hp_" + fighter).css("width", BAR_STEP * scenario.log[fighter][move_number].hp);
+    function animate_bar(fighter, move){
+        console.log(fighter, move, move.hp, BAR_STEP * move.hp);
+        $("#hp_" + fighter).css("width", BAR_STEP * move.hp);
         $("#debug_" + fighter).css("background", "white");
-        $("#debug_" + fighter).html(scenario.log[fighter][move_number].message);
+        $("#debug_" + fighter).html(move.message);
     }
 
     function animate(sprite){
@@ -47,10 +38,10 @@ $(function(){
         name = fighter.name;
 
         move_number = fighter.move;
-        move = scenario.log[name][move_number];
+        move = GF.fighters[name].log[move_number];
         if(typeof move == 'undefined') return;
         var nextState = move.state;
-        animate_bar(name, move_number);
+        animate_bar(name, move);
         fighter.move ++;
 
         changeAnimation(sprite, fighter.animations, nextState, fighter.current_state);
@@ -62,16 +53,16 @@ $(function(){
         }
 
         fighter.current_state = nextState;
-        console.log(move.position);
         fighter.new_position = move.position * UNIT;
         fighter.position = move.position * UNIT;
     }
 
     function create_fighter(fighter){
+        console.log(fighter);
         fighters[fighter] = {
             current_state: IDLE,
-            position: scenario.fighters[fighter].position * UNIT,
-            new_position: scenario.fighters[fighter].position * UNIT,
+            position: UNIT,
+            new_position: UNIT,
             adversary: (fighter == "fighter_0") ? "#fighter_1" : "#fighter_0",
             name: fighter,
             move: 0,
@@ -108,7 +99,7 @@ $(function(){
         }
 
         $("#fighters").addSprite(fighter,
-                                    {posx: scenario.fighters[fighter].position * UNIT,
+                                    {posx: UNIT,
                                      posy: POSITION_Y,
                                      height: FIGHTER_SIZE,
                                      width: FIGHTER_SIZE,
@@ -119,7 +110,7 @@ $(function(){
 
     }
 
-    /*replace with new*/
+    //replace with new
     var changeAnimation = function(sprite, animationArry, newAnimation , oldAnimation){
         sprite
             .setAnimation(animationArry[newAnimation].animation)
@@ -164,18 +155,17 @@ $(function(){
 
     function show_fight(){
         //Fighters
-        create_fighter("fighter_0");
-        create_fighter("fighter_1");
-        fighter_0 = fighters.fighter_0;
-        fighter_1 = fighters.fighter_1;
+        for( fighter in GF.fighters ){
+            create_fighter(fighter);
+        }
 
         //register the main callback
         $.playground().registerCallback(function(){
-            var fighter_1 = $("#fighter_1");
-            var fighter_1F = fighter_1.data("fighter");
-
             var fighter_0 = $("#fighter_0");
             var fighter_0F = fighter_0.data("fighter");
+
+            var fighter_1 = $("#fighter_1");
+            var fighter_1F = fighter_1.data("fighter");
 
             //Move
             if(fighter_0F.current_state == WALK_FORWARD || fighter_0F.current_state == WALK_BACKWARD){
@@ -186,21 +176,20 @@ $(function(){
             }
 
             if(fighter_0F.position == fighter_1F.position) {
-                console.log("Duh!", fighter_0F.position, fighter_1F.position);
-                //return false;
+                console.log("Duh!", fighter_0F.position, fighter_1F.position); // TODO
             }
             return false;
-        }, 1000);
+        }, 1000); // TODO bring back animations
 
         $("#hp_fighter_0").css("background-repeat", "repeat");
         $("#hp_fighter_1").css("background-repeat", "repeat");
+        $("#hp_fighter_0").css("width", BAR_STEP * GF.fighters.fighter_0.hp);
+        $("#hp_fighter_1").css("width", BAR_STEP * GF.fighters.fighter_1.hp);
         $("#debug_fighter_0").css("background-repeat", "repeat");
         $("#debug_fighter_1").css("background-repeat", "repeat");
-        $("#hp_fighter_0").css("width", BAR_STEP * scenario.fighters.fighter_0.hp);
-        $("#hp_fighter_1").css("width", BAR_STEP * scenario.fighters.fighter_1.hp);
     }
 
 	//initialize the start button
 	$.playground().startGame();
-});
-
+    show_fight();
+};
