@@ -4,43 +4,92 @@
         <title>GitFighter</title>
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
         <script type="text/javascript" src="http://cdn.gamequeryjs.com/jquery.gamequery.js"></script>
-        <script type="text/javascript" src="gitfighter.js"></script>
-        <script type="text/javascript" src="arena.js"></script>
+        <script type="text/javascript" src="/static/gitfighter.js"></script>
+        <script type="text/javascript" src="/static/arena.js"></script>
         <style type="text/css">
-            .error {border: 2px red solid;}
-            .main-table {width: 100%; vertical-align: top; text-align: center;}
-            html,body{
-                margin: 0;
+            @font-face {
+                font-family: BitWonder;
+                src: url("/static/8BitWonder.ttf");
+            }
+            html,body {
+                margin: auto;
                 padding: 0;
-                background-color: black;
-                font-family: verdana, sans-serif;
-                font-size: 8pt;
-                text-align: center;
+                background-color: #0c0e26;
+                font-family: BitWonder;
+                font-size: 9pt;
+                color: #d00c12;
+                display: block;
+                text-align:center;
+            }
+            div {
+                font-family: BitWonder;
+            }
+            .error {
+                border: 4px #d00c12 solid;
+            }
+            td {
+                text-align: center; 
+                vertical-align: top; 
+            }
+            td.stat {
+                width: 20%;
+            }
+
+            td.playground {
+                width: 30%;
+            }
+            .main-table {
+                width: 70%;
+                text-align: center; 
+                margin: auto;
+                display: block;
+            }
+            div.logo {
+                width: 500px;
+                height: 121px;
+                border: none;
+                margin: auto;
+                display: block;
+                text-align:center;
             }
         </style>
     </head>
     <body>
+        <div class="logo"><img src="/static/logo_.png"></div>
         <div>
             <table class="main-table">
                 <tbody>
                     <tr>
-                        <td>
+                        <td class="stat">
                             <input id="f1" class="f-selector" />
                         </td>
-                        <td >
+                        <td class="playground">
                             VS<br/>
                             <!--button id="fight" disabled="disabled">fight</button-->
                             <button id="fight">fight</button>
                         </td>
-                        <td>
+                        <td class="stat">
                             <input id="f2" class="f-selector" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="stat">
+                            <div class="fighter-stats" id="s1">lalalala</div>
+                        </td>
+                        <td class="playground">
+                            <div style="width: 800px; height: 450px;">
+                                <div id="playground"></div>
+                            </div>
+                        </td>
+                        <td class="stat">
+                            <div class="fighter-stats" id="s2">asdfasdfasdfasdfasdfa
+                                asdfasdfasdfa
+                                sdf
+                            asdfa</div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         <div/>
-        <div>
-            <div id="playground" style="width: 800px; height: 450px;"></div>
-        </div>
     </body>
 </html>

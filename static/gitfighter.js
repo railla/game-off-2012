@@ -42,6 +42,7 @@ $(document).ready(function() {
     $('#fight').bind('click', function() {
         //$(this).attr('disabled', 'disabled');
         GF = stub_fighters; // TODO replace stub
+                
         $.ajax({
         type: 'POST',
         url: DEBUG_SERVER + "/fight",
