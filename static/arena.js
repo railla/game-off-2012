@@ -4,7 +4,8 @@ FIGHTER_SIZE = 100;
 FRAME_COUNT = 4;
 POSITION_Y = 270;
 BAR_STEP = 0.3;
-BARS_WIDTH = 1000;
+BARS_WIDTH = PLAYGROUND_WIDTH / 4;
+BARS_HEIGHT = 15;
 UNIT = 100;
 DEBUG_SERVER = "http://127.0.0.1:5000";
 REFRESH_RATE = 25;
@@ -130,27 +131,35 @@ function start_fight(){
 
     $.playground().addSprite("background",
             {posx: 0, posy: 0,
-                height: 450, width: 800,
+                height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH,
                 animation: background}).addGroup("fighters").end()
         .addGroup("bars", 
-            {posx:0, posy: 5,
-                height: 35, width: BARS_WIDTH})
+            {posx: 0, posy: BARS_HEIGHT,
+                height: 2 * BARS_HEIGHT + 4, width: BARS_WIDTH})
+        .addSprite("hp_bg_fighter_0",
+            {height: BARS_HEIGHT + 2, 
+                posx: BARS_WIDTH - 1, posy: 0, 
+                width: BARS_WIDTH + 2 })
+        .addSprite("hp_bg_fighter_1",
+            {height: BARS_HEIGHT + 2, 
+                posx: PLAYGROUND_WIDTH - 2 * BARS_WIDTH, posy: 0, 
+                width: BARS_WIDTH + 2 })
         .addSprite("hp_fighter_0",
-            {height: 15, posx:50, posy: 0, 
-                width: BARS_WIDTH / 2,
+            {height: BARS_HEIGHT, 
+                posx: BARS_WIDTH, posy: 0,
+                width: BARS_WIDTH,
                 animation: hp_fighter_0 })
         .addSprite("hp_fighter_1",
-            {height: 15, posx:350, posy: 0, 
-                width: BARS_WIDTH / 2,
+            {height: BARS_HEIGHT, 
+                posx: PLAYGROUND_WIDTH - 2 * BARS_WIDTH, posy: 0,
+                width: BARS_WIDTH,
                 animation: hp_fighter_1 })
         .addSprite("debug_fighter_0",
-            {height: 15, posx:50, posy: 15, 
-                width: BARS_WIDTH / 2,
-                animation: hp_fighter_0 })
+            {   width: BARS_WIDTH * 2, height: BARS_HEIGHT,
+                posx: 0, posy: BARS_HEIGHT })
         .addSprite("debug_fighter_1",
-            {height: 15, posx:350, posy: 15, 
-                width: BARS_WIDTH / 2,
-                animation: hp_fighter_1 })
+            {   width: BARS_WIDTH * 2, height: BARS_HEIGHT,
+                posx: 2 * BARS_WIDTH, posy: BARS_HEIGHT })
 	$("#scenegraph").css("background-color","#121423");
 
     function show_fight(){
@@ -185,11 +194,21 @@ function start_fight(){
         $("#hp_fighter_1").css("background-repeat", "repeat");
         $("#hp_fighter_0").css("width", BAR_STEP * GF.fighters.fighter_0.hp);
         $("#hp_fighter_1").css("width", BAR_STEP * GF.fighters.fighter_1.hp);
+        $("#hp_bg_fighter_0").css("width", BAR_STEP * GF.fighters.fighter_0.hp);
+        $("#hp_bg_fighter_1").css("width", BAR_STEP * GF.fighters.fighter_1.hp);
+        $("#hp_bg_fighter_0").css("border", "1px white solid");
+        $("#hp_bg_fighter_1").css("border", "1px white solid");
+        $("#hp_bg_fighter_0").css("background-color", "#660000");
+        $("#hp_bg_fighter_1").css("background-color", "#660000");
         $("#debug_fighter_0").css("background-repeat", "repeat");
         $("#debug_fighter_1").css("background-repeat", "repeat");
     }
 
 	//initialize the start button
-	$.playground().startGame();
+	$.playground().startGame(function(){
+		$("#loading_screen").fadeOut(2000, function(){$(this).remove()});
+    });
+
+    //ready to show fight
     show_fight();
 };

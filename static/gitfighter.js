@@ -42,6 +42,25 @@ $(document).ready(function() {
     $('#fight').bind('click', function() {
         //$(this).attr('disabled', 'disabled');
         GF = stub_fighters; // TODO replace stub
+        $('#playground_overlay').hide();
+        for(fighter_ in GF.fighters) {
+            content = '';
+            var fighter = GF.fighters[fighter_];
+            $.each(["full_name", 
+                    "language",
+                    "size", 
+                    "watchers", 
+                    "forks", 
+                    "open_issues", 
+                    "description"],
+                function(i, property) {
+                    var value = fighter[property];
+                    console.log(property, value, !value, value == null);
+                    content += '<p> ' + property + ": " + value + '</p>';
+                });
+            console.log("#stats_" + fighter_);
+            $(content).appendTo("#stats_" + fighter_);
+        }
                 
         $.ajax({
         type: 'POST',
