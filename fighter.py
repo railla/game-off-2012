@@ -30,11 +30,6 @@ class Arena(object):
     def json(self):
         return {"width": self.width}
 
-    @property
-    def json_fighters(self):
-        return {"fighter_0": {"hp": self.fighter_0.hp_max, "position": self.fighter_1.position},
-                "fighter_1": {"hp": self.fighter_1.hp_max, "position": self.fighter_1.position}}
-
 
 class Fighter(object):
     def __init__(self, arena, position, stats):
