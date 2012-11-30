@@ -7,7 +7,7 @@ BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
 DEBUG_SERVER = "http://127.0.0.1:5000";
-REFRESH_RATE = 25;
+TIMES_PER_SECOND = 8;
 
 // fighters states
 IDLE =          0;
@@ -34,7 +34,6 @@ function start_fight(){
     
     function animate_bar(fighter, move){
         var tmp = BAR_WIDTH - ~~(move.hp / GF.fighters[fighter].hp_scale);
-        console.log(fighter, GF.fighters[fighter].hp_scale, move.hp, tmp);
         var ctx = GF.fighters[fighter].bar_ctx();
         ctx.fillStyle = '#660000';
         var scale = GF.fighters[fighter].hp_scale;
@@ -73,6 +72,12 @@ function start_fight(){
         fighter_.hp_previous = move.hp;
         fighter.move ++;
 
+        // Shouldn't change WALK_* state until reached position
+        if( (fighter.current_state == WALK_BACKWARD || fighter.current_state == WALK_FORWARD)
+                && sprite.x() != fighter_.position) {
+                    return;
+        }
+
         changeAnimation(sprite, fighter.animations, nextState, fighter.current_state);
 
         if(nextState == PUNCH || nextState == KICK){
@@ -82,7 +87,6 @@ function start_fight(){
         }
 
         fighter.current_state = nextState;
-        fighter.new_position = move.position * UNIT;
         fighter.position = move.position * UNIT;
     }
 
@@ -90,38 +94,38 @@ function start_fight(){
         $.extend(GF.fighters[fighter], {
             current_state: IDLE,
             position: UNIT,
-            new_position: UNIT,
             adversary: (fighter == "fighter_0") ? "#fighter_1" : "#fighter_0",
             name: fighter,
             move: 0,
             hp_scale: get_hp_scale(GF.fighters[fighter].size),
             hp_previous: GF.fighters[fighter].size,
+            delta: false,
             animations: $.map([ {imageURL: get_image(fighter, "idle"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 240,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "walk_forward"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 240,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "walk_backward"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 240,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "punch"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 240,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "kick"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 240,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "block"),
                                 numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 480,
+                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
                                 {imageURL: get_image(fighter, "hit"),
-                                numberOfFrame: FRAME_COUNT, rate: 720,
+                                numberOfFrame: FRAME_COUNT, rate: 1000 / TIMES_PER_SECOND,
                                 type: $.gQ.ANIMATION_CALLBACK}],
                 function(params){ 
                     return {animation: new $.gQ.Animation(params), deltaX: 0, deltaY: 0, 
@@ -129,8 +133,8 @@ function start_fight(){
         });
 
         $("#fighters").addGroup(fighter,
-                            {posx: UNIT,
-                             posy: POSITION_Y,
+                            {posy: POSITION_Y,
+                             posx: GF.fighters[fighter].log[0].position * UNIT,
                              height: FIGHTER_SIZE,
                              width: FIGHTER_SIZE})
                     .addSprite('body_' + fighter,
@@ -148,17 +152,17 @@ function start_fight(){
     }
 
     //replace with new
-    var changeAnimation = function(sprite, animationArry, newAnimation , oldAnimation){
+    var changeAnimation = function(sprite, animations, newAnimation , oldAnimation){
         sprite
-            .setAnimation(animationArry[newAnimation].animation)
-            .width(animationArry[newAnimation].width)
-            .height(animationArry[newAnimation].height)
+            .setAnimation(animations[newAnimation].animation)
+            .width(animations[newAnimation].width)
+            .height(animations[newAnimation].height)
             .y(sprite.position().top)
             .x(sprite.position().left)
     };
 
     // the game
-    $("#playground").playground({height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH, refreshRate: 10, keyTracker: true});
+    $("#playground").playground({height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH, refreshRate: 25, keyTracker: true});
 
     //Playground Sprites
     var background = new $.gQ.Animation({imageURL: "./playground/background_0.png"});
@@ -180,27 +184,55 @@ function start_fight(){
             create_fighter(fighter);
         }
 
+
         //register the main callback
         $.playground().registerCallback(function(){
-            var fighter_0 = $("#fighter_0");
-            var fighter_0F = fighter_0.data("fighter");
 
-            var fighter_1 = $("#fighter_1");
-            var fighter_1F = fighter_1.data("fighter");
+            function move_fighter(fighter) {
+                var fighter = $(fighter);
+                var fighterF = fighter.data('fighter');
 
-            //Move
-            if(fighter_0F.current_state == WALK_FORWARD || fighter_0F.current_state == WALK_BACKWARD){
-                fighter_0.x(fighter_0F.position);
+                //Move
+                if(fighterF.current_state == WALK_FORWARD || fighterF.current_state == WALK_BACKWARD){
+                    if( fighterF.delta == false ) {
+                        fighterF.delta = (fighterF.position - fighter.x()) / TIMES_PER_SECOND;
+                        if( Math.abs(fighterF.delta) > UNIT ) { 
+                            fighter.x(fighterF.position);
+                            return;
+                        }
+                    }
+                    if( fighterF.current_state == WALK_FORWARD && fighterF.delta < 0
+                        || fighterF.current_state == WALK_BACKWARD && fighterF.delta > 0)
+                        console.log('Wrong turn!');
+                    fighter.x(fighterF.delta, true);
+
+                    if( fighterF.position == fighter.x() ) {
+                        fighterF.delta = false;
+                    }
+                }
             }
-            if(fighter_1F.current_state == WALK_FORWARD || fighter_1F.current_state == WALK_BACKWARD){
-                fighter_1.x(fighter_1F.position);
+            
+            for( fighter in GF.fighters ) move_fighter('#' + fighter);
+
+            if( GF.fighters['fighter_0'].delta || GF.fighters['fighter_1'].delta ) {
+                var log = $.map(['fighter_0', 'fighter_1'], function (el) {
+                            var fighter = $('#' + el);
+                            var fighterF = fighter.data('fighter');
+                            return [el, fighterF.delta, fighterF.position, fighter.x()];
+                });
+                console.log(log);
             }
+
+            var fighter_0 = $('#fighter_0');
+            var fighter_0F = fighter_0.data('fighter');
+            var fighter_1 = $('#fighter_1');
+            var fighter_1F = fighter_1.data('fighter');
 
             if(fighter_0F.position == fighter_1F.position) {
                 console.log("Duh!", fighter_0F.position, fighter_1F.position); // TODO
             }
             return false;
-        }, 1000); // TODO bring back animations
+        }, 1000 / TIMES_PER_SECOND); // TODO bring back animations
 
         function draw_bar(fighter, left) {
             var $bar = $('<div><canvas id="canvas_' + fighter + '"></canvas></div>').appendTo('#gQ_scenegraph');
@@ -237,7 +269,6 @@ function start_fight(){
         draw_bar("fighter_1", PLAYGROUND_WIDTH / 2 + BAR_HEIGHT);
     }
     
-	//initialize the start button
     $.playground().startGame(function(){
 		$("#loading_screen").fadeOut(2000, function(){$(this).remove()});
     });
