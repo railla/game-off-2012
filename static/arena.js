@@ -67,16 +67,16 @@ function start_fight(){
                 return;
         }
         var nextState = move.state;
-        if(fighter_.hp_previous != move.hp) animate_bar(name, move);
-        debug_animate(name, move);
-        fighter_.hp_previous = move.hp;
-        fighter.move ++;
-
         // Shouldn't change WALK_* state until reached position
         if( (fighter.current_state == WALK_BACKWARD || fighter.current_state == WALK_FORWARD)
                 && sprite.x() != fighter_.position) {
                     return;
         }
+
+        if(fighter_.hp_previous != move.hp) animate_bar(name, move);
+        debug_animate(name, move);
+        fighter_.hp_previous = move.hp;
+        fighter.move ++;
 
         changeAnimation(sprite, fighter.animations, nextState, fighter.current_state);
 
@@ -100,35 +100,13 @@ function start_fight(){
             hp_scale: get_hp_scale(GF.fighters[fighter].size),
             hp_previous: GF.fighters[fighter].size,
             delta: false,
-            animations: $.map([ {imageURL: get_image(fighter, "idle"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "walk_forward"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "walk_backward"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "punch"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "kick"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "block"),
-                                numberOfFrame: FRAME_COUNT,
-                                delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK},
-                                {imageURL: get_image(fighter, "hit"),
-                                numberOfFrame: FRAME_COUNT, rate: 1000 / TIMES_PER_SECOND,
-                                type: $.gQ.ANIMATION_CALLBACK}],
-                function(params){ 
-                    return {animation: new $.gQ.Animation(params), deltaX: 0, deltaY: 0, 
+            animations: $.map([ "idle", "walk_forward", "walk_backward", "punch", "kick", "block", "hit"],
+                function(image_name) {
+                    return {animation: new $.gQ.Animation({imageURL: get_image(fighter, image_name),
+                                        numberOfFrame: FRAME_COUNT,
+                                        delta: FIGHTER_SIZE, rate: 1000 / TIMES_PER_SECOND,
+                                        type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK}),
+                            deltaX: 0, deltaY: 0, 
                         width: FIGHTER_SIZE, height: FIGHTER_SIZE};})
         });
 
@@ -144,11 +122,8 @@ function start_fight(){
                     .addSprite('hat_' + fighter,
                             {posx: UNIT / 3,
                              posy: - 10, 
-                             animation: {imageURL: get_image(fighter, "hat"),
-                                numberOfFrame: FRAME_COUNT, rate: 720,
-                                type: $.gQ.ANIMATION_CALLBACK}});
+                             });
         $("#" + fighter).data("fighter", GF.fighters[fighter]);
-
     }
 
     //replace with new
@@ -183,7 +158,6 @@ function start_fight(){
         for( fighter in GF.fighters ){
             create_fighter(fighter);
         }
-
 
         //register the main callback
         $.playground().registerCallback(function(){
@@ -270,7 +244,7 @@ function start_fight(){
     }
     
     $.playground().startGame(function(){
-		$("#loading_screen").fadeOut(2000, function(){$(this).remove()});
+		$("#loading_screen").fadeOut(3000, function(){$(this).remove()});
     });
 
     //ready to show fight
