@@ -6,7 +6,7 @@ POSITION_Y = 270;
 BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
-DEBUG_SERVER = "http://127.0.0.1:5000";
+DEBUG_SERVER = "http://githunt.com";
 TIMES_PER_SECOND = 8;
 
 // fighters states
