@@ -9,4 +9,4 @@ Let's the fight begin!
 
 ## Tools
 
-This game created with the help of jQuery and [http://gamequeryjs.com/ | gameQueryJS]
+This game created with the help of jQuery and [gameQueryJS](http://gamequeryjs.com/)
