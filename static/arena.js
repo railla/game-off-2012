@@ -27,7 +27,6 @@ function get_hp_step(hp) {
 }
 
 function get_hp_scale(hp) {
-    console.log(hp);
     return hp / BAR_WIDTH;
 }
 
@@ -53,7 +52,7 @@ function start_fight(){
     }
 
     function animate(sprite){
-        sprite = $(sprite);
+        sprite = $(sprite).parent();
         fighter = sprite.data("fighter");
         name = fighter.name;
         move_number = fighter.move;
@@ -129,14 +128,21 @@ function start_fight(){
                         width: FIGHTER_SIZE, height: FIGHTER_SIZE};})
         });
 
-        $("#fighters").addSprite(fighter,
-                                    {posx: UNIT,
-                                     posy: POSITION_Y,
-                                     height: FIGHTER_SIZE,
-                                     width: FIGHTER_SIZE,
-                                     animation: GF.fighters[fighter].animations[0].animation,
-                                     geometry: $.gQ.GEOMETRY_RECTANGLE,
-                                     callback: animate});
+        $("#fighters").addGroup(fighter,
+                            {posx: UNIT,
+                             posy: POSITION_Y,
+                             height: FIGHTER_SIZE,
+                             width: FIGHTER_SIZE})
+                    .addSprite('body_' + fighter,
+                            {animation: GF.fighters[fighter].animations[0].animation,
+                             geometry: $.gQ.GEOMETRY_RECTANGLE,
+                             callback: animate})
+                    .addSprite('hat_' + fighter,
+                            {posx: UNIT / 3,
+                             posy: - 10, 
+                             animation: {imageURL: get_image(fighter, "hat"),
+                                numberOfFrame: FRAME_COUNT, rate: 720,
+                                type: $.gQ.ANIMATION_CALLBACK}});
         $("#" + fighter).data("fighter", GF.fighters[fighter]);
 
     }
@@ -208,7 +214,6 @@ function start_fight(){
             var canvas = document.getElementById("canvas_" + fighter);
             if (canvas.getContext){
                 var ctx = canvas.getContext('2d');
-                console.log(canvas, ctx);
                 ctx.fillStyle = "white";
                 ctx.fillRect(0, 0, BAR_WIDTH + 2, BAR_HEIGHT + 2);
                 ctx.fillStyle = "#006600";
@@ -221,7 +226,6 @@ function start_fight(){
                     if(x + width > BAR_WIDTH) {
                         BAR_STEP = BAR_WIDTH - x + h;
                     }
-                    console.log(count, x);
                     ctx.fillRect(x + h, 1, BAR_STEP - h, BAR_HEIGHT);
                 }
             }
