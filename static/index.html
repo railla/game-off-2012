@@ -11,10 +11,10 @@
                 font-family: BitWonder;
                 src: url("/static/8BitWonder.ttf");
             }
-            html,body {
+            html, body, #debug_fighter_0, #debug_fighter_1 {
                 margin: auto;
                 padding: 0;
-                background-color: #ff9f57; /*#0c0e26;*/
+                background-color: #ff9f57;
                 font-family: BitWonder;
                 font-size: 9pt;
                 color: #d00c12;
@@ -35,6 +35,15 @@
                 width: 20%;
             }
 
+            #hp_fg_fighter_1 {
+                float: right;
+                position: relative;
+            }
+            #hp_fg_fighter_0 {
+                float: left;
+                position: relative;
+            }
+
             td.playground {
                 width: 30%;
             }
@@ -52,12 +61,19 @@
                 display: block;
             }
             #playground, 
-            #playground_overlay {
+            #playground_overlay,
+            #playground_overlay_done {
                 width: 100%;
                 height: 100%;
                 position: absolute;
                 top: 0;
                 left: 0;
+            }
+            #playground_overlay_done {
+                color: #660000;
+                font-color: #660000;
+                font-size: 20px; 
+                background-color: #111;
             }
             #playground_overlay {
                 z-index: 1000;
@@ -77,10 +93,6 @@
                 color: white; 
                 z-index: 100; 
                 background: #111;
-            }
-            p {
-                color: #0c0e26;
-                font-size: 6pt;
             }
         </style>
     </head>
@@ -108,6 +120,9 @@
                         </td>
                         <td class="playground">
                             <div id="container">
+                                <div id="playground_overlay_done">
+                                    <div id="fight_over"/>
+                                </div>
                                 <div id="playground"></div>
                                 <div id="loading_screen"></div>
                                 <div id="playground_overlay">
