@@ -40,8 +40,8 @@ class Fighter(object):
         self.act = {0: self.idle,
                 1: self.walk_forward,
                 2: self.walk_backward,
-                3: self.punch,
-                4: self.kick,
+                3: self.kick,
+                4: self.punch,
                 5: self.block,
                 6: self.beaten,
                 }
