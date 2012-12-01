@@ -26,13 +26,13 @@ $(document).ready(function() {
             if (data.message) {
                 $(that).addClass('error');
                 GF.fighters[event.target.id] = undefined;
-                //$('#fight').attr('disabled', 'disabled');
+                $('#fight').attr('disabled', 'disabled');
             } else {
                 $(that).removeClass('error');
                 GF.fighters[event.target.id] = data;
                 if (GF.fighters.fighter_0 && GF.fighters.fighter_1) {
                     if (GF.fighters.fighter_0.full_name == GF.fighters.fighter_1.full_name) {
-                        //$('#fight').attr('disabled', 'disabled');
+                        $('#fight').attr('disabled', 'disabled');
                         return false;
                     }
                     $('#fight').removeAttr('disabled');
@@ -41,8 +41,8 @@ $(document).ready(function() {
         });
         });
     $('#fight').bind('click', function() {
-        //$(this).attr('disabled', 'disabled');
-        GF = stub_fighters; // TODO replace stub
+        $(this).attr('disabled', 'disabled');
+        //GF = stub_fighters; // TODO replace stub
         $('#playground_overlay').hide();
         for(fighter_ in GF.fighters) {
             content = '';
