@@ -49,7 +49,7 @@ def get_random_pair():
 def history():
     history = []
     for item in fights.find().sort("$natural", -1).limit(10):
-        history.append(item["log"])
+        history.append(dict((k, item[k]) for k in ["log", "fighter_0", "fighter_1"]))
     return jsonify({"history": history})
 
 if __name__ == "__main__":
