@@ -6,7 +6,8 @@ POSITION_Y = 270;
 BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
-DEBUG_SERVER = "http://githunt.com";
+//DEBUG_SERVER = "http://githunt.com";
+DEBUG_SERVER = "http://127.0.0.1:6000";
 TIMES_PER_SECOND = 8;
 
 // fighters states
@@ -19,7 +20,7 @@ BLOCK =         5;
 BEATEN =        6;
 
 function get_image(fighter, action){
-    return "./" + fighter + "/" + action + "_" + FIGHTER_SIZE + "x" + FIGHTER_SIZE + "x" + FRAME_COUNT + ".png";
+    return "/static/" + fighter + "/" + action + "_" + FIGHTER_SIZE + "x" + FIGHTER_SIZE + "x" + FRAME_COUNT + ".png";
 }
 
 function get_hp_step(hp) {
@@ -140,7 +141,7 @@ function start_fight(){
     $("#playground").playground({height: PLAYGROUND_HEIGHT, width: PLAYGROUND_WIDTH, refreshRate: 25, keyTracker: true});
 
     //Playground Sprites
-    var background = new $.gQ.Animation({imageURL: "./playground/background_0.png"});
+    var background = new $.gQ.Animation({imageURL: "/static/playground/background_0.png"});
 
     $.playground().addSprite("background",
             {posx: 0, posy: 0,
