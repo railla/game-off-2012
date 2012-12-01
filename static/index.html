@@ -2,142 +2,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
     <head>
         <title>GitFighter</title>
+        <link rel="stylesheet" href="/static/gitfighter.css" />
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
         <script type="text/javascript" src="http://cdn.gamequeryjs.com/jquery.gamequery.js"></script>
         <script type="text/javascript" src="/static/gitfighter.js"></script>
         <script type="text/javascript" src="/static/arena.js"></script>
-        <style type="text/css">
-            @font-face {
-                font-family: BitWonder;
-                src: url("/static/8BitWonder.ttf");
-            }
-            html, body, #debug_fighter_0, #debug_fighter_1 {
-                margin: auto;
-                padding: 0;
-                background-color: #ff9f57;
-                font-family: BitWonder;
-                font-size: 9pt;
-                color: #d00c12;
-                display: block;
-                text-align: center;
-            }
-            div {
-                font-family: BitWonder;
-            }
-            .error {
-                border: 4px #d00c12 solid;
-            }
-            td {
-                text-align: center; 
-                vertical-align: top; 
-            }
-            td.stat {
-                width: 20%;
-            }
-
-            #hp_fg_fighter_1 {
-                float: right;
-                position: relative;
-            }
-            #hp_fg_fighter_0 {
-                float: left;
-                position: relative;
-            }
-
-            td.playground {
-                width: 30%;
-            }
-            .main-table {
-                width: 70%;
-                text-align: center; 
-                margin: auto;
-                display: block;
-            }
-            div.logo {
-                width: 500px;
-                height: 121px;
-                border: none;
-                margin: auto;
-                display: block;
-            }
-            #playground, 
-            #playground_overlay,
-            #playground_overlay_done {
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-            }
-            #playground_overlay_done {
-                color: #660000;
-                font-color: #660000;
-                font-size: 20px; 
-                background-color: #111;
-            }
-            #playground_overlay {
-                z-index: 1000;
-                margin: auto;
-                display: block;
-            }
-            #container {
-                width: 800px; 
-                height: 450px; 
-                position: relative;
-            }
-            #loading_screen {
-                position: absolute; 
-                top: 0px; 
-                width: 800px; 
-                height: 450px; 
-                color: white; 
-                z-index: 100; 
-                background: #111;
-            }
-        </style>
     </head>
     <body>
         <div class="logo"><img src="/static/logo_.png"></div>
-        <div>
-            <table class="main-table">
-                <tbody>
-                    <tr>
-                        <td class="stat">
-                            <input id="f1" class="f-selector" />
-                        </td>
-                        <td class="playground">
-                            VS<br/>
-                            <!--button id="fight" disabled="disabled">fight</button-->
-                            <!--button id="fight">fight</button-->
-                        </td>
-                        <td class="stat">
-                            <input id="f2" class="f-selector" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="stat">
-                            <div class="fighter-stats" id="stats_fighter_0"></div>
-                        </td>
-                        <td class="playground">
-                            <div id="container">
-                                <div id="playground_overlay_done">
-                                    <div id="fight_over"/>
-                                </div>
-                                <div id="playground"></div>
-                                <div id="loading_screen"></div>
-                                <div id="playground_overlay">
-                                    <div id="start_fight">
-                                        <input type="image" src="/static/fight_.gif" id="fight"/>
-                                    </div>
+        <table class="main-table">
+            <tbody>
+                <tr>
+                    <td class="stat">
+                        <input id="f1" class="f-selector" />
+                    </td>
+                    <td class="playground">
+                        VS<br/>
+                        <!--button id="fight" disabled="disabled">fight</button-->
+                        <!--button id="fight">fight</button-->
+                    </td>
+                    <td class="stat">
+                        <input id="f2" class="f-selector" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="stat" id="stats_fighter_0" />
+                    <td class="playground">
+                        <div id="container">
+                            <div id="playground_overlay_done">
+                                <div id="fight_over"/>
+                            </div>
+                            <div id="playground"></div>
+                            <div id="loading_screen"></div>
+                            <div id="playground_overlay">
+                                <div id="start_fight">
+                                    <input type="image" src="/static/fight_.gif" id="fight"/>
                                 </div>
                             </div>
-                        </td>
-                        <td class="stat">
-                            <div class="fighter-stats" id="stats_fighter_1"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        <div/>
+                        </div>
+                    </td>
+                    <td class="stat" id="stats_fighter_1" />
+                </tr>
+            </tbody>
+        </table>
+        <h2 class="history">Last fights</h2>
+        <ul class="history" />
     </body>
 </html>
