@@ -1,0 +1,97 @@
+@font-face {
+    font-family: BitWonder;
+    src: url("8BitWonder.ttf");
+}
+html, body, #debug_fighter_0, #debug_fighter_1 {
+    padding: 0;
+    background-color: #ff9f57;
+    font-family: BitWonder;
+    font-size: 9pt;
+    color: #d00c12;
+    display: block;
+    text-align: center;
+}
+div {
+    font-family: BitWonder;
+}
+.error {
+    border: 4px #d00c12 solid;
+}
+td {
+    text-align: center; 
+    vertical-align: top; 
+}
+td.stat {
+    width: 20%;
+    overflow: hidden;
+}
+
+#hp_fg_fighter_1 {
+    float: right;
+    position: relative;
+}
+#hp_fg_fighter_0 {
+    float: left;
+    position: relative;
+}
+
+td.playground {
+    width: 60%;
+}
+.main-table {
+    width: 100%;
+    text-align: center; 
+    table-layout:fixed;
+    overflow: hidden;
+}
+div.logo {
+    width: 500px;
+    height: 121px;
+    border: none;
+    margin: auto;
+    display: block;
+}
+#playground, 
+#playground_overlay,
+#playground_overlay_done {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+#playground_overlay_done {
+    color: #660000;
+    font-color: #660000;
+    font-size: 20px; 
+    background-color: #111;
+}
+#playground_overlay {
+    z-index: 1000;
+    margin: auto;
+    display: block;
+}
+#container {
+    width: 800px; 
+    height: 450px; 
+    position: relative;
+}
+#loading_screen {
+    position: absolute; 
+    top: 0px; 
+    width: 800px; 
+    height: 450px; 
+    color: white; 
+    z-index: 100; 
+    background: #111;
+}
+.history {display: none;}
+ul.history {padding: 0}
+.history li {
+    display: inline;
+    list-style-type: none;
+    width: 60px;
+    height: 60px;
+    border: 3px solid blue;
+    padding: 5px;
+}

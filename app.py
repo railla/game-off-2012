@@ -32,8 +32,12 @@ def fight():
 
     for key in ["fighter_0", "fighter_1"]:
         fight[key] = fighters_stats["fighters"][key]
-    fight["unique"] = "/".join(sorted([get_full_name(fight["fighter_0"]), get_full_name(fight["fighter_1"])]))
-    fights.insert(fight)
+        fight[key]["full_name"] = get_full_name(fight[key])
+    fight["unique"] = "/".join(sorted([get_full_name(fight[key]) for key in ["fighter_0", "fighter_1"]]))
+    try:
+        fights.update({"unique": fight["unique"]}, fight, upsert = True)
+    except:
+        print 'failed to log fight'
 
     return response
 
@@ -49,7 +53,7 @@ def get_random_pair():
 def history():
     history = []
     for item in fights.find().sort("$natural", -1).limit(10):
-        history.append(item["log"])
+        history.append(dict((k, item[k]) for k in ["log", "fighter_0", "fighter_1"]))
     return jsonify({"history": history})
 
 if __name__ == "__main__":
