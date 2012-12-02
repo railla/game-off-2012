@@ -25,24 +25,27 @@ $(document).ready(function() {
         query('/repos/' + input, function(data) {
             if (data.message) {
                 $(that).addClass('error');
-                GF.fighters[event.target.id] = undefined;
-                //$('#fight').attr('disabled', 'disabled');
+                GF.fighters[event.target.name] = undefined;
+                $('#fight').attr('disabled', 'disabled');
+                $('#fight').css('visibility', 'none');
             } else {
                 $(that).removeClass('error');
-                GF.fighters[event.target.id] = data;
+                GF.fighters[event.target.name] = data;
                 if (GF.fighters.fighter_0 && GF.fighters.fighter_1) {
                     if (GF.fighters.fighter_0.full_name == GF.fighters.fighter_1.full_name) {
-                        //$('#fight').attr('disabled', 'disabled');
+                        $('#fight').attr('disabled', 'disabled');
+                        $('#fight').css('visibility', 'none');
                         return false;
                     }
                     $('#fight').removeAttr('disabled');
+                    $('#fight').css('visibility', 'visible');
                 }
             }
         });
         });
     $('#fight').bind('click', function() {
-        //$(this).attr('disabled', 'disabled');
-        GF = stub_fighters; // TODO replace stub
+        $(this).attr('disabled', 'disabled');
+        //GF = stub_fighters; // TODO replace stub
         $('#playground_overlay').hide();
         for(fighter_ in GF.fighters) {
             content = '';
@@ -65,7 +68,7 @@ $(document).ready(function() {
                 
         $.ajax({
         type: 'POST',
-        url: DEBUG_SERVER + "/fight",
+        url: SERVER + "/fight",
         data: JSON.stringify(GF),
         success: function(data){
             GF.fighters.fighter_0.log = data.log.fighter_0;

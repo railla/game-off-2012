@@ -5,8 +5,13 @@ POSITION_Y = 270;
 BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
-//DEBUG_SERVER = "http://githunt.com";
-DEBUG_SERVER = "http://127.0.0.1:6000";
+
+DEBUG = false;
+//DEBUG = true;
+SERVER = "http://githunt.com";
+if( DEBUG ) {
+    SERVER = "http://127.0.0.1:6000";
+}
 TIMES_PER_SECOND = 8;
 
 // fighters states
@@ -17,7 +22,6 @@ KICK =          3;
 PUNCH =         4;
 BLOCK =         5;
 BEATEN =        6;
-//"idle", "walk_forward", "walk_backward", "kick", "punch", "block", "beaten"
 
 function get_image(fighter, action) {
     return "/static/" + fighter + "/" + action + "_" + UNIT + "x" + UNIT + "x" + FRAME_COUNT + ".png";
@@ -29,6 +33,10 @@ function get_hp_step(hp) {
 
 function get_hp_scale(hp) {
     return hp / BAR_WIDTH;
+}
+
+function debug_log() {
+    if( DEBUG ) console.log(arguments);
 }
 
 function start_fight() {
@@ -51,7 +59,7 @@ function start_fight() {
     }
 
     function change_sprite_animation(sprite, animations, state) {
-        console.log(arguments);
+        debug_log(arguments);
         var sprite = $(sprite);
         sprite
             .setAnimation(animations[state].animation)
@@ -63,7 +71,7 @@ function start_fight() {
 
     function change_group_animation (group_sprite, fighter) {
         var fighter_state = fighter.current_state;
-        console.log(fighter_state, PUNCH, group_sprite.children()[0], group_sprite.children()[1]);
+        debug_log(fighter_state, PUNCH, group_sprite.children()[0], group_sprite.children()[1]);
         change_sprite_animation(group_sprite.children()[1], fighter.body_animations, fighter_state);
         if( fighter_state >= PUNCH ) {
             change_sprite_animation(group_sprite.children()[0], fighter.effects_animations, fighter_state - PUNCH);
@@ -78,11 +86,10 @@ function start_fight() {
         var move_number = fighter.move;
         var move = fighter.log[move_number];
 
-        if(typeof move == 'undefined' || (fighter.hp_previous <= 0 && move.hp <= 0)) {
+        if(typeof move == 'undefined') {
                 $('#playground').fadeOut(6000, function() {
-                    fighter.current_state = IDLE;
                     $(this).remove();
-                    $('#fight_over').append('<p>And the winner is</p><p>' + fighter.full_name + '!</p>');
+                    $('#fight_over').append('<p>And the winner is</p><p>' + ((fighter.hp < GF.fighters[fighter.adversary].hp) ? GF.fighters[fighter.adversary].full_name : fighter.full_name) + '!</p>');
                     $.playground().pauseGame();
                 });
                 return;
@@ -95,7 +102,6 @@ function start_fight() {
         }
 
         if(fighter.hp_previous != move.hp) animate_bar(name, move);
-        fighter.hp_previous = move.hp;
         fighter.move ++;
 
         if(nextState == PUNCH || nextState == KICK) {
@@ -108,6 +114,16 @@ function start_fight() {
         fighter.position = move.position * UNIT;
         change_group_animation(group_sprite, fighter);
         debug_animate(name, move);
+
+        if(fighter.hp_previous <= 0 && move.hp <= 0) {
+                $('#playground').fadeOut(6000, function() {
+                    $(this).remove();
+                    $('#fight_over').append('<p>And the winner is</p><p>' + GF.fighters[fighter.adversary].full_name + '!</p>');
+                    $.playground().pauseGame();
+                });
+                return;
+        }
+        fighter.hp_previous = move.hp;
     }
 
 
@@ -115,7 +131,7 @@ function start_fight() {
         $.extend(GF.fighters[fighter], {
             current_state: IDLE,
             position: UNIT,
-            adversary: (fighter == "fighter_0") ? "#fighter_1" : "#fighter_0",
+            adversary: (fighter == "fighter_0") ? "fighter_1" : "fighter_0",
             name: fighter,
             move: 0,
             hp_scale: get_hp_scale(GF.fighters[fighter].size),
@@ -126,7 +142,7 @@ function start_fight() {
                     return {animation: new $.gQ.Animation({imageURL: get_image(fighter, image_name),
                                         numberOfFrame: FRAME_COUNT,
                                         delta: UNIT,
-                                        rate: 360,
+                                        rate: 180,
                                         type: $.gQ.ANIMATION_HORIZONTAL | $.gQ.ANIMATION_CALLBACK}),
                             deltaX: 0,
                             deltaY: 0, 
@@ -214,7 +230,7 @@ function start_fight() {
                     }
                     if( fighterF.current_state == WALK_FORWARD && fighterF.delta < 0
                         || fighterF.current_state == WALK_BACKWARD && fighterF.delta > 0)
-                        console.log('Wrong turn!');
+                        debug_log('Wrong turn!');
                     fighter.x(fighterF.delta, true);
 
                     if( fighterF.position == fighter.x() ) {
@@ -232,7 +248,7 @@ function start_fight() {
                             var fighterF = GF.fighters[name];
                             return [el, fighterF.delta, fighterF.position, fighter.x()];
                 });
-                console.log(log);
+                debug_log(log);
             }
 
             var fighter_0 = $('#fighter_0');
@@ -241,7 +257,7 @@ function start_fight() {
             var fighter_1F = GF.fighters['fighter_1'];
 
             if(fighter_0F.position == fighter_1F.position) {
-                console.log("Duh!", fighter_0F.position, fighter_1F.position); // TODO
+                debug_log("Duh!", fighter_0F.position, fighter_1F.position); // TODO
             }
             return false;
         }, 1000 / TIMES_PER_SECOND);

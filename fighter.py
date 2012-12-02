@@ -2,6 +2,7 @@
 
 import random
 import math
+import logging
 
 
 class Arena(object):
@@ -14,17 +15,28 @@ class Arena(object):
         self.fighter_0 = Fighter(self, 3, fighters["fighters"]["fighter_0"])
         self.fighter_1 = Fighter(self, 5, fighters["fighters"]["fighter_1"])
 
+    def new_move(self):
+        self.fighter_0.new_move = True
+        self.fighter_1.new_move = True
+
     @property
     def fighters(self):
         return (self.fighter_0, self.fighter_1)
 
     def start(self):
         self.log = {"fighter_0": [], "fighter_1": []}
+        fighters_idx = [0, 1]
+        for key in ['fighter_0', 'fighter_1']:
+            fighter = getattr(self, key)
+            self.log[key].append({"hp": fighter.hp, "state": 0, "position": fighter.position, "message": "Starting the fight!"})
         while not any([x.hp <= 0 for x in (self.fighter_0, self.fighter_1)]):
-            state, message = self.fighter_0.choice()
-            self.log["fighter_0"].append({"hp": self.fighter_0.hp, "state": state, "position": self.fighter_0.position, "message": message})
-            state, message = self.fighter_1.choice()
-            self.log["fighter_1"].append({"hp": self.fighter_1.hp, "state": state, "position": self.fighter_1.position, "message": message})
+            self.new_move()
+            random.shuffle(fighters_idx)
+            _ = dict((("fighter_%i" % i, getattr(self, "fighter_%i" % i).choice()) for i in fighters_idx))
+            logging.debug(_)
+            for key in _:
+                fighter = getattr(self, key)
+                self.log[key].append({"hp": fighter.hp, "state": fighter.state, "position": fighter.position, "message": _[key][1]})
             assert self.fighter_0.position != self.fighter_1.position, "Duh! %s" % self.log
 
     def json(self):
@@ -37,6 +49,7 @@ class Fighter(object):
         self.position = position
         self.step = 1
         self.state = 0
+        self.new_move = True
         self.act = {0: self.idle,
                 1: self.walk_forward,
                 2: self.walk_backward,
@@ -51,11 +64,11 @@ class Fighter(object):
 
     @property
     def attack(self):
-        return math.log(self.forks or 1) * math.log(self.watchers or 1) * 15
+        return math.log(self.forks or 2) * math.log(self.watchers or 2) * 50
 
     @property
     def sneak_attack(self):
-        return math.log(self.forks or 1) * math.log(self.watchers or 1) * math.log(self.open_issues or 1)
+        return math.log(self.forks or 2) * math.log(self.watchers or 2) * math.log(self.open_issues or 2) + self.attack
 
     @property
     def hp(self):
@@ -97,6 +110,8 @@ class Fighter(object):
         if self.can_move(new_position):
             self.position = new_position
             return "%s moves forward from %s to %s" % (self, old_position, new_position)
+        self.state = 0
+        return self.idle()
 
     def walk_backward(self):
         old_position = self.position
@@ -104,11 +119,16 @@ class Fighter(object):
         if self.can_move(new_position):
             self.position = new_position
             return "%s moves backward from %s to %s" % (self, old_position, new_position)
+        self.state = 0
+        return self.idle()
 
     def punch(self):
         target = self.near()
         if target and target.state != 5:
             target.hp = max(target.hp - self.attack, 0)
+            if target.new_move:
+                target.state = len(self.act) - 1
+                target.new_move = False
             return "%s punches %s!" % (self, target)
         return "%s misses!" % self
 
@@ -116,6 +136,9 @@ class Fighter(object):
         target = self.near()
         if target and target.state != 5:
             target.hp = max(target.hp - self.sneak_attack, 0)
+            if target.new_move:
+                target.state = len(self.act) - 1
+                target.new_move = False
             return "%s kicks %s!" % (self, target)
         return "%s misses!" % self
 
@@ -126,12 +149,14 @@ class Fighter(object):
         return "%s beaten!" % self
 
     def choice(self):
-        self.state = random.randrange(len(self.act))
+        if self.new_move:
+            self.state = random.randrange(len(self.act) - 2)
         message = self.act[self.state]()
+        self.new_move = False
         return self.state, message
 
 if __name__ == "__main__":
     arena = Arena(8)
     arena.set_fighters()
     arena.start()
-    print(arena.log)
+    logging.debug(arena.log)
