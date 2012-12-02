@@ -18,10 +18,9 @@ TIMES_PER_SECOND = 8;
 IDLE =          0;
 WALK_FORWARD =  1;
 WALK_BACKWARD = 2;
-KICK =          3;
-PUNCH =         4;
-BLOCK =         5;
-BEATEN =        6;
+PUNCH =         3;
+BLOCK =         4;
+BEATEN =        5;
 
 function get_image(fighter, action) {
     return "/static/" + fighter + "/" + action + "_" + UNIT + "x" + UNIT + "x" + FRAME_COUNT + ".png";
@@ -106,9 +105,9 @@ function start_fight() {
         if(fighter.hp_previous != move.hp) animate_bar(name, move);
         fighter.move ++;
 
-        if(nextState == PUNCH || nextState == KICK) {
+        if(nextState == PUNCH) {
             group_sprite.z(20);
-        } else if(fighter.current_state == PUNCH || fighter.current_state == KICK) {
+        } else if(fighter.current_state == PUNCH) {
             group_sprite.z(0);
         }
 
@@ -131,7 +130,7 @@ function start_fight() {
             hp_scale: get_hp_scale(GF.fighters[fighter].size),
             hp_previous: GF.fighters[fighter].size,
             delta: false,
-            body_animations: $.map([ "idle", "walk_forward", "walk_backward", "kick", "punch", "block", "beaten"],
+            body_animations: $.map([ "idle", "walk_forward", "walk_backward", "punch", "block", "beaten"],
                 function(image_name) {
                     return {animation: new $.gQ.Animation({imageURL: get_image(fighter, image_name),
                                         numberOfFrame: FRAME_COUNT,

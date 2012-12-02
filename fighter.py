@@ -53,10 +53,9 @@ class Fighter(object):
         self.act = {0: self.idle,
                 1: self.walk_forward,
                 2: self.walk_backward,
-                3: self.kick,
-                4: self.punch,
-                5: self.block,
-                6: self.beaten,
+                3: self.punch,
+                4: self.block,
+                5: self.beaten,
                 }
         self.__dict__.update(dict([(key, stats[key]) for key in stats 
             if not any([key.endswith(suff) for suff in ("_id", "_count", "_url")])]))
@@ -64,11 +63,9 @@ class Fighter(object):
 
     @property
     def attack(self):
-        return math.log(self.forks or 2) * math.log(self.watchers or 2) * 50
-
-    @property
-    def sneak_attack(self):
-        return math.log(self.forks or 2) * math.log(self.watchers or 2) * math.log(self.open_issues or 2) + self.attack
+        return math.log(self.forks + min(self.hp, 100)) \
+                * math.log(self.watchers + min(self.hp, 100)) \
+                * math.log(self.open_issues + min(self.hp, 100))
 
     @property
     def hp(self):
@@ -124,22 +121,12 @@ class Fighter(object):
 
     def punch(self):
         target = self.near()
-        if target and target.state != 5:
+        if target and target.state != 4:
             target.hp = max(target.hp - self.attack, 0)
             if target.new_move:
                 target.state = len(self.act) - 1
                 target.new_move = False
             return "%s punches %s!" % (self, target)
-        return "%s misses!" % self
-
-    def kick(self):
-        target = self.near()
-        if target and target.state != 5:
-            target.hp = max(target.hp - self.sneak_attack, 0)
-            if target.new_move:
-                target.state = len(self.act) - 1
-                target.new_move = False
-            return "%s kicks %s!" % (self, target)
         return "%s misses!" % self
 
     def block(self):
