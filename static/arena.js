@@ -85,15 +85,17 @@ function start_fight() {
         var fighter = GF.fighters[name];
         var move_number = fighter.move;
         var move = fighter.log[move_number];
+        var adversary = GF.fighters[fighter.adversary];
 
-        if(typeof move == 'undefined') {
+        if(typeof move == 'undefined' || fighter.hp_previous <= 0 || adversary.hp_previous <= 0) {
                 $('#playground').fadeOut(6000, function() {
                     $(this).remove();
-                    $('#fight_over').append('<p>And the winner is</p><p>' + ((fighter.hp < GF.fighters[fighter.adversary].hp) ? GF.fighters[fighter.adversary].full_name : fighter.full_name) + '!</p>');
+                    $('#fight_over').append('<p>And the winner is</p><p>' + (fighter.hp < adversary.hp ? adversary.full_name : fighter.full_name) + '!</p>');
                     $.playground().pauseGame();
                 });
                 return;
         }
+
         var nextState = move.state;
         // Shouldn't change WALK_* state until reached position
         if( (fighter.current_state == WALK_BACKWARD || fighter.current_state == WALK_FORWARD)
@@ -115,14 +117,6 @@ function start_fight() {
         change_group_animation(group_sprite, fighter);
         debug_animate(name, move);
 
-        if(fighter.hp_previous <= 0 && move.hp <= 0) {
-                $('#playground').fadeOut(6000, function() {
-                    $(this).remove();
-                    $('#fight_over').append('<p>And the winner is</p><p>' + GF.fighters[fighter.adversary].full_name + '!</p>');
-                    $.playground().pauseGame();
-                });
-                return;
-        }
         fighter.hp_previous = move.hp;
     }
 
