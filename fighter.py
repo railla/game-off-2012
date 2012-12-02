@@ -51,11 +51,11 @@ class Fighter(object):
 
     @property
     def attack(self):
-        return math.log(self.forks or 1) * math.log(self.watchers or 1) * 15
+        return math.log(self.forks or 2) * math.log(self.watchers or 2) * 15
 
     @property
     def sneak_attack(self):
-        return math.log(self.forks or 1) * math.log(self.watchers or 1) * math.log(self.open_issues or 1)
+        return math.log(self.forks or 2) * math.log(self.watchers or 2) * math.log(self.open_issues or 2)
 
     @property
     def hp(self):
