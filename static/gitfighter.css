@@ -51,6 +51,9 @@ div.logo {
     margin: auto;
     display: block;
 }
+#container {
+    margin: auto;
+}
 #playground, 
 #playground_overlay,
 #playground_overlay_done {
