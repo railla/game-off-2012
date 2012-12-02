@@ -59,10 +59,8 @@ $(document).ready(function() {
                     "description"],
                 function(i, property) {
                     var value = fighter[property];
-                    console.log(property, value, !value, value == null);
                     content += '<p> ' + property + ": " + value + '</p>';
                 });
-            console.log("#stats_" + fighter_);
             $(content).appendTo("#stats_" + fighter_);
         }
                 
@@ -73,7 +71,6 @@ $(document).ready(function() {
         success: function(data){
             GF.fighters.fighter_0.log = data.log.fighter_0;
             GF.fighters.fighter_1.log = data.log.fighter_1;
-            console.log(data, GF.fighters.fighter_0.log, GF.fighters.fighter_1.log);
             start_fight();
             },
         contentType: "application/json; charset=UTF-8"
