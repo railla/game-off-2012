@@ -6,8 +6,8 @@ BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
 
-DEBUG = false;
-//DEBUG = true;
+//DEBUG = false;
+DEBUG = true;
 SERVER = "http://githunt.com";
 if( DEBUG ) {
     SERVER = "http://127.0.0.1:6000";
@@ -292,9 +292,11 @@ function start_fight() {
     }
     
     $.playground().startGame(function() {
-		$("#loading_screen").fadeOut(3000, function() {$(this).remove()});
+	    $("#loading_screen").fadeOut(6000, function() {
+            $(this).remove();
+            //ready to show fight
+            show_fight();
+        });
     });
 
-    //ready to show fight
-    show_fight();
 };
