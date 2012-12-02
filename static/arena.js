@@ -6,8 +6,8 @@ BAR_WIDTH = PLAYGROUND_WIDTH / 4;
 BAR_HEIGHT = 15;
 UNIT = 100;
 
-//DEBUG = false;
-DEBUG = true;
+DEBUG = false;
+//DEBUG = true;
 SERVER = "http://githunt.com";
 if( DEBUG ) {
     SERVER = "http://127.0.0.1:6000";
