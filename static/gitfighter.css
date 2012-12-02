@@ -86,7 +86,7 @@ div.logo {
     height: 450px; 
     color: white; 
     z-index: 100; 
-    background: #111;
+    background: #151a44;
 }
 .history {display: none;}
 ul.history {padding: 0}
@@ -97,4 +97,10 @@ ul.history {padding: 0}
     height: 60px;
     border: 3px solid blue;
     padding: 5px;
+}
+
+p.hint,
+td.stat {
+    color: #151a44;
+    font-size: 9px; 
 }
