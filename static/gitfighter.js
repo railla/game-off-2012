@@ -15,7 +15,7 @@ $(document).ready(function() {
 
     $('.f-selector').bind('blur', function(event) {
         var input = $(this).val();
-        if (!input.match(/^\w+\/\w+$/)) {
+        if (!input.match(/^[\w-_]+\/[\w-_]+$/)) {
             $(this).addClass('error');
             return false;
         } else {
