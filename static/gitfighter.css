@@ -88,14 +88,13 @@ div.logo {
     z-index: 100; 
     background: #151a44;
 }
-.history {display: none;}
+.history {
+    display: none;
+}
 ul.history {padding: 0}
 .history li {
     display: inline;
     list-style-type: none;
-    width: 60px;
-    height: 60px;
-    border: 3px solid blue;
     padding: 5px;
 }
 
@@ -103,4 +102,12 @@ p.hint,
 td.stat {
     color: #151a44;
     font-size: 9px; 
+}
+
+.battle {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url(/static/fighter_0/beaten_100x100x4.png);
+    background-size: auto 30px;
 }

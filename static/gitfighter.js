@@ -82,7 +82,7 @@ $(document).ready(function() {
         $('.history').show();
         $.getJSON('/history', function(data) {
             $.each(data.history, function(idx, item) {
-                $('ul.history').append('<li title="' + item.fighter_0.name + ' vs ' + item.fighter_1.name + '"></li>');
+                $('ul.history').append('<li title="' + item.fighter_0.name + ' vs ' + item.fighter_1.name + '"><div class="battle"></div></li>');
             });
         });
     }
